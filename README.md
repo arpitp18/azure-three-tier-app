@@ -94,11 +94,39 @@ Assosiate each NSG rules with its relevant subnet
 
       <img width="744" height="361" alt="image" src="https://github.com/user-attachments/assets/8b6397aa-400d-4067-b1c1-690181ec703d" />
 
+**Note:** Follow postgres creation instruction first if secret creation seem confusing. 
+
 #### User Assigned Identity
 
 - Create user-assigned identity and provide proper RBAC roles on key vault as well as your backend VMSS/Instance so that it can fetch secrets.
 
 <img width="943" height="310" alt="image" src="https://github.com/user-attachments/assets/4980feeb-0cc7-4ac8-a302-019609f69b90" />
+
+### Create Azure Postgres
+
+<img width="943" height="392" alt="image" src="https://github.com/user-attachments/assets/75261041-6fd6-46a4-9dee-808cf98a52c4" />
+
+- Create DB
+
+<img width="805" height="305" alt="image" src="https://github.com/user-attachments/assets/a829f3ce-99fd-43c0-8815-540508374db3" />
+
+- Networking - You need to create Private endpoint which integrates with your DB subnet. In network policies select NSG
+
+<img width="882" height="398" alt="image" src="https://github.com/user-attachments/assets/49938583-ae36-4fe4-821a-6abb4f9ac73f" />
+
+<img width="763" height="334" alt="image" src="https://github.com/user-attachments/assets/bc2155f1-b7f7-42cc-94cf-ec58d6dea007" />
+
+- Assosiation with subnet, PE creates seperate NIC and private link resource itself
+- Enable integration with Private DNS zone while creating PE
+
+<img width="944" height="364" alt="image" src="https://github.com/user-attachments/assets/be9a84c2-b164-48e4-9559-1241a2eee599" />
+
+<img width="926" height="403" alt="image" src="https://github.com/user-attachments/assets/c674eaa6-149c-4079-8a98-c5b9f139a86f" />
+
+- VNET link
+
+<img width="947" height="343" alt="image" src="https://github.com/user-attachments/assets/8eb022b9-f97b-4ca7-a793-4c472ba7bcf1" />
+
 
 ### Create VMSS for frontend
 
@@ -131,7 +159,7 @@ CONTAINER ID   IMAGE                          COMMAND                  CREATED  
 03dec9014a48   ###############   "/nodejs/bin/node se…"   2 seconds ago   Up 2 seconds   0.0.0.0:80->3000/tcp, [::]:80->3000/tcp   infallible_zhukovsky
 ```
 
-**Note:** Here at this stage you would not be having provate IP of your internal loadbalancer. So you can test it and for actual end to end implementation, run this command again when you have private IP of LB handy.
+**Note:** Here at this stage you would not be having private IP of your internal loadbalancer. So you can test it and for actual end to end implementation, run this command again when you have private IP of LB handy.
 
 ### Create VMSS for backend
 
@@ -197,11 +225,14 @@ fi
 
 # Start container
 docker run -d -p 8080:8080   -e DB_USERNAME="$DB_USERNAME"   -e DB_PASSWORD="$DB_PASSWORD"   -e DB_HOST="$DB_HOST"   -e DB_PORT="$DB_PORT"   -e DB_NAME="$DB_NAME"  
- -e SSL="$SSL_MODE"   -e PORT=8080   --restart always   arpitpattani/gobackendapp
+ -e SSL="$SSL_MODE"   -e PORT=8080   --restart always   {image name}
  
 18653c0614d390332590aa667970fe94bfa6b9528067b6ca7ab2a0138f648284
 root@three-tieEJSCK6:/home/azureuser/Terraform-Full-Course-Azure/lessons/day27/backend# docker ps
 CONTAINER ID   IMAGE                       COMMAND           CREATED         STATUS         PORTS                                         NAMES
-18653c0614d3   arpitpattani/gobackendapp   "./backend-app"   6 seconds ago   Up 5 seconds   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp   gracious_shirley
+18653c0614d3   #############   "./backend-app"   6 seconds ago   Up 5 seconds   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp   gracious_shirley
 
 ```
+
+**Note: ** Make sure user-assigned identity is assosiated with Backend VM
+
