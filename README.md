@@ -1,4 +1,4 @@
-# azure-three-tier-app
+# Azure Three Tier Application
 
 ## Manually Test you application in Azure (Using Azure Portal)
 
