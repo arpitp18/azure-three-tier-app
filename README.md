@@ -236,3 +236,19 @@ CONTAINER ID   IMAGE                       COMMAND           CREATED         STA
 
 **Note: ** Make sure user-assigned identity is assosiated with Backend VM
 
+### Testing
+
+If all the steps and configurations are done properly, try accessing frontend UI with public IP of you load balancer.
+
+<img width="778" height="377" alt="image" src="https://github.com/user-attachments/assets/523ee753-3c3a-434a-a535-6adaedc81e61" />
+
+End to End flow should work and you would be able to add goals and UI will display them.
+
+<img width="816" height="458" alt="image" src="https://github.com/user-attachments/assets/f54aea9d-94f3-435c-8112-4010b738495a" />
+
+<img width="734" height="371" alt="image" src="https://github.com/user-attachments/assets/55d54f58-c446-425a-8cea-78748c6b37d1" />
+
+**Notes:**
+
+- You can follow sequence according to your preference.
+- You can keep public IP assigned/or assign fresh for troubleshooting and get to know how application works and than remove all and enhance security.
