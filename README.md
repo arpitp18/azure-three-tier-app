@@ -69,12 +69,41 @@ Assosiate each NSG rules with its relevant subnet
 <img width="806" height="389" alt="image" src="https://github.com/user-attachments/assets/3c6da7b7-58ef-4612-a2a5-4cd534795962" />
 
 - Frontend IP Config - Public IP (create new or use existing in public subnet)
-- Backend pool - Select your VMSS (This will be created in next step and you can add it later)
+- Backend pool - Select your frontend VMSS (This will be created in next step and you can add it later)
 - Loadbalancing Rule - Acording to app logic
 
   <img width="587" height="321" alt="image" src="https://github.com/user-attachments/assets/bf55c888-c536-4e20-900e-97d52b34e887" />
   <img width="616" height="323" alt="image" src="https://github.com/user-attachments/assets/b1484197-2e8c-447b-abd9-68236dc1b7b4" />
 
+#### Create Private/Internal Loadbalancer
+
+<img width="947" height="321" alt="image" src="https://github.com/user-attachments/assets/45eeb2d8-e9f4-43c8-a941-187eebf3cf87" />
+
+- Frontend IP Config - Private IP (create new or use existing in private subnet)
+- Backend pool - Select your backend VMSS (This will be created in next step and you can add it later)
+- Loadbalancing Rule - Acording to app logic
+
+  <img width="599" height="356" alt="image" src="https://github.com/user-attachments/assets/e706937d-112d-4b44-bdc2-20edd6985adb" />
+
+### Create KeyVault
+
+- KeyVault will be used to store DB related secrets
+
+- Create new KeyValut and assign your user proper RBAC role so that you can create secrets in key vault
+    - Below secrets needs to be created
+
+      <img width="744" height="361" alt="image" src="https://github.com/user-attachments/assets/8b6397aa-400d-4067-b1c1-690181ec703d" />
+
+### User Assigned Identity
+
+- Create user-assigned identity and provide proper RBAC roles on key vault as well as your backend VMSS/Instance so that it can fetch secrets.
+
+<img width="943" height="310" alt="image" src="https://github.com/user-attachments/assets/4980feeb-0cc7-4ac8-a302-019609f69b90" />
+
+```
+you can use this AZ command in backend VMSS to login using user-assigned identity
+
+az login
 
 ### Create VMSS for frontend
 
@@ -111,8 +140,72 @@ CONTAINER ID   IMAGE                          COMMAND                  CREATED  
 ### Create VMSS for backend
 
 - Create VMSS same way you have created for frontend.
+- On top of that install AZ CLI in backend vm
 
 ```
+key_vault_id={id of keyvault}
 
+# Get Key Vault name from the Key Vault ID
+KEY_VAULT_NAME=$(echo "$key_vault_id" | awk -F/ '{print $NF}')
+echo "Using Key Vault: $KEY_VAULT_NAME"
+
+# Explicitly login with Managed Identity
+echo "Logging in to Azure CLI using managed identity..."
+az login --client-id {clientid} --allow-no-subscriptions
+
+you will get JSON response of user assigned identity is being used at this point.
+
+# Get secrets from Key Vault using Managed Identity
+echo "Retrieving database credentials from Key Vault using Managed Identity..."
+DB_USERNAME=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" --name "db-username" --query "value" -o tsv)
+DB_PASSWORD=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" --name "db-password" --query "value" -o tsv)
+DB_HOST=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" --name "db-host" --query "value" -o tsv)
+DB_NAME=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" --name "db-name" --query "value" -o tsv)
+DB_PORT=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" --name "db-port" --query "value" -o tsv)
+SSL_MODE=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" --name "db-sslmode" --query "value" -o tsv)
+
+# Verify all required secrets were retrieved
+if [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_HOST" ] || [ -z "$DB_NAME" ] || [ -z "$DB_PORT" ] || [ -z "$SSL_MODE" ]; then
+  echo "ERROR: Failed to retrieve all required database secrets from Key Vault. Provisioning cannot continue."
+  echo "Missing secrets:"
+  [ -z "$DB_USERNAME" ] && echo "- db-username"
+  [ -z "$DB_PASSWORD" ] && echo "- db-password"
+  [ -z "$DB_HOST" ] && echo "- db-host"
+  [ -z "$DB_NAME" ] && echo "- db-name"
+  [ -z "$DB_PORT" ] && echo "- db-port"
+  [ -z "$SSL_MODE" ] && echo "- db-sslmode"
+  exit 1
+fi
+
+echo "Successfully retrieved all database configuration from Key Vault."
+
+# Ensure DNS resolution is working before trying to connect to the database
+echo "Checking DNS resolution for database host: $DB_HOST"
+max_attempts=20
+attempt=1
+while [ $attempt -le $max_attempts ]; do
+  echo "DNS resolution attempt $attempt of $max_attempts..."
+  if nslookup "$DB_HOST" > /dev/null 2>&1; then
+    echo "Successfully resolved database host: $DB_HOST"
+    break
+  else
+    echo "Failed to resolve database host. Waiting 15 seconds before retry..."
+    sleep 15
+    attempt=$((attempt+1))
+  fi
+done
+
+if [ $attempt -gt $max_attempts ]; then
+  echo "Failed to resolve database host after $max_attempts attempts. Proceeding anyway..."
+fi
+
+# Start container
+docker run -d -p 8080:8080   -e DB_USERNAME="$DB_USERNAME"   -e DB_PASSWORD="$DB_PASSWORD"   -e DB_HOST="$DB_HOST"   -e DB_PORT="$DB_PORT"   -e DB_NAME="$DB_NAME"  
+ -e SSL="$SSL_MODE"   -e PORT=8080   --restart always   arpitpattani/gobackendapp
+ 
+18653c0614d390332590aa667970fe94bfa6b9528067b6ca7ab2a0138f648284
+root@three-tieEJSCK6:/home/azureuser/Terraform-Full-Course-Azure/lessons/day27/backend# docker ps
+CONTAINER ID   IMAGE                       COMMAND           CREATED         STATUS         PORTS                                         NAMES
+18653c0614d3   arpitpattani/gobackendapp   "./backend-app"   6 seconds ago   Up 5 seconds   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp   gracious_shirley
 
 ```
