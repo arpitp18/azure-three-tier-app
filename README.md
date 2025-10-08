@@ -94,16 +94,11 @@ Assosiate each NSG rules with its relevant subnet
 
       <img width="744" height="361" alt="image" src="https://github.com/user-attachments/assets/8b6397aa-400d-4067-b1c1-690181ec703d" />
 
-### User Assigned Identity
+#### User Assigned Identity
 
 - Create user-assigned identity and provide proper RBAC roles on key vault as well as your backend VMSS/Instance so that it can fetch secrets.
 
 <img width="943" height="310" alt="image" src="https://github.com/user-attachments/assets/4980feeb-0cc7-4ac8-a302-019609f69b90" />
-
-```
-you can use this AZ command in backend VMSS to login using user-assigned identity
-
-az login
 
 ### Create VMSS for frontend
 
@@ -118,6 +113,7 @@ az login
 <img width="887" height="350" alt="image" src="https://github.com/user-attachments/assets/6ccdbf71-ed5f-4c93-9c8f-ecef087103a4" />
 
 <img width="521" height="337" alt="image" src="https://github.com/user-attachments/assets/a82ec2d3-96b0-478b-a8ec-5879ecff726e" />
+
 
 #### Configuring Frontend Application
 
