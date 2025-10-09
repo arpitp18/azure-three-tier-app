@@ -1,0 +1,96 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "extensions_CustomScript_fileUris": {
+            "value": null
+        },
+        "extensions_CustomScript_storageAccountName": {
+            "value": null
+        },
+        "extensions_CustomScript_storageAccountKey": {
+            "value": null
+        },
+        "extensions_CustomScript_commandToExecute": {
+            "value": null
+        },
+        "privateEndpoints_db_pe_name": {
+            "value": null
+        },
+        "sshPublicKeys_three_key_name": {
+            "value": null
+        },
+        "vaults_three_tier_vault_name": {
+            "value": null
+        },
+        "sshPublicKeys_backend_key_name": {
+            "value": null
+        },
+        "publicIPAddresses_front_pip_name": {
+            "value": null
+        },
+        "networkSecurityGroups_db_nsg_name": {
+            "value": null
+        },
+        "virtualNetworks_threetiervent_name": {
+            "value": null
+        },
+        "loadBalancers_frontend_public_lb_name": {
+            "value": null
+        },
+        "networkSecurityGroups_public_nsg_name": {
+            "value": null
+        },
+        "storageAccounts_threetierstorage_name": {
+            "value": null
+        },
+        "loadBalancers_backend_internal_lb_name": {
+            "value": null
+        },
+        "networkSecurityGroups_bastion_nsg_name": {
+            "value": null
+        },
+        "networkSecurityGroups_private_nsg_name": {
+            "value": null
+        },
+        "virtualMachineScaleSets_three_tier_vmss_name": {
+            "value": null
+        },
+        "flexibleServers_goal_tracker_db_name": {
+            "value": null
+        },
+        "virtualMachines_three_tier_vmss_d74d061f_name": {
+            "value": null
+        },
+        "virtualMachineScaleSets_three_tier_backend_name": {
+            "value": null
+        },
+        "virtualMachines_three_tier_backend_cb8fe66a_name": {
+            "value": null
+        },
+        "networkInterfaces_threetiervent_nic01_8e0bbc6a_name": {
+            "value": null
+        },
+        "userAssignedIdentities_three_tier_user_mi_name": {
+            "value": null
+        },
+        "networkSecurityGroups_basicNsgthreetiervent_nic01_name": {
+            "value": null
+        },
+        "networkInterfaces_threetiervent_backend_nic01_827a97a6_name": {
+            "value": null
+        },
+        "privateDnsZones_privatelink_postgres_database_azure_com_name": {
+            "value": null
+        },
+        "networkSecurityGroups_basicNsgthreetiervent_backend_nic01_name": {
+            "value": null
+        },
+        "publicIPAddresses_pip_threetiervent_eastus_private_subnet_name": {
+            "value": null
+        },
+        "publicIPAddresses_pip_threetiervent_eastus_public_subnet2_name": {
+            "value": null
+        }
+    }
+}
